@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>todolist</title>
 
+    <link rel="stylesheet" href="index.css">
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-    
+
     <link href="vendors/bootstrap-5.3.3-dist/css/bootstrap.min.css" rel="stylesheet">
 
     <!-- Önce jQuery -->
@@ -16,30 +19,34 @@
     <script src="vendors/bootstrap-5.3.3-dist/js/bootstrap.min.js"></script>
 
     <style>
-        .completed-task{
-            background-color: #85F675;
-        }
+
     </style>
 </head>
+
 <body>
     <!-- START NAVBAR-->
-     <div id="header-navbar">
+    <div id="header-navbar">
         <nav class="navbar bg-body-tertiary">
             <div class="container-fluid">
-              <a class="navbar-brand" href="#">
-                <img src="images/check.png" alt="Logo" width="30" height="24" class="d-inline-block align-text-top ms-3">
-              </a>
-              <div class="position-absolute text-success fs-4 fw-bold" style="left: 50%; transform: translateX(-50%)"> TO DO LIST</div>
+                <a class="navbar-brand" href="#">
+                    <i class="bi bi-journal-check icon-custom"></i>
+                </a>
+                <div class="position-absolute text-success fs-4 fw-bold" style="left: 50%; transform: translateX(-50%)">
+                    TO DO LIST</div>
+                <div>
+                    <button id="save-button" type="button" class="btn btn-danger m-3"
+                        style="width: 100px;">SAVE</button>
+                </div>
             </div>
         </nav>
-     </div>
-    
+    </div>
+
     <!-- END NAVBAR-->
-      
+
     <!-- START MAIN CONTENT-->
     <section id="main-content" class="p-5 row">
         <div class="col-md-9 mt-2">
-            <div class="w-100 justify-content-center d-flex" >
+            <div class="w-100 justify-content-center d-flex">
                 <div class="card " style="width: 90%;">
                     <div class="card-header fw-bold text-center">
                         <div id="header=text">Task To Be Done Today</div>
@@ -53,14 +60,14 @@
                         </div>
                     </div>
                     <ul id="tasks" class="list-group list-group-flush">
-                  </div>
+                </div>
             </div>
         </div>
         <div class="col-md-3 mt-2">
             <div class="justify-content-center d-flex">
                 <div class="card" style="width: 90%;">
-                    <div class="card-header">To do List Metrikleri</div>
-                    <div class="card-body" >
+                    <strong class="card-header">To do List Metrikleri</strong>
+                    <div class="card-body">
                         <div class="row justify-content-between mb-1">
                             <div class="col-10">Toplam task sayisi</div>
                             <div id="taskSum" class="col-2 text-end">0</div>
@@ -76,50 +83,64 @@
                     </div>
                 </div>
             </div>
-            
         </div>
-      
-
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="liveToast" class="toast bg-danger-subtle" role="alert" aria-live="assertive" aria-atomic="true">
+                <div class="toast-header">
+                    <i id="warning-button" class="bi bi-exclamation-triangle-fill"></i>
+                    <strong class="me-auto">Opss!!</strong>
+                    <small id="elapsed-time"></small>
+                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                </div>
+                <div class="toast-body">
+                    Please, enter any duty you have to be.
+                </div>
+            </div>
+        </div>
     </section>
-    <!-- END MAIN CONTENT--> 
+    <!-- END MAIN CONTENT-->
 
 </body>
+
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
+
 <script>
-    $( document ).ready(function() {
-    
+
     let completedTaskCounter = 0;
-    let taskCounter = 0; // disarida tanimlanir ki her yeni eklenen yeni arttirilmis sayi ile devam etsin
-                         // iceride tanimlasaydik o zaman her yeni eklenen task0 id sini alacakti hata oldugu icin yeni task ekleyemeyecektik
-  
-    const updateTaskCounter = (value) => {
+    let taskCounter = 0;
+    let ratio = 0;
+    // disarida tanimlanir ki her yeni eklenen yeni arttirilmis sayi ile devam etsin
+    // iceride tanimlasaydik o zaman her yeni eklenen task0 id sini alacakti hata oldugu icin yeni task ekleyemeyecektik
+
+    function updateTaskCounter(value) {
         taskCounter += value; // eksili bi value girildiginde decrease islemi yapilir
         $("#taskSum").text(taskCounter);
-        calculateRatioOfTask();   
+        calculateRatioOfTask();
     };
 
-    const updateCompletedTask = (value) => {
+    function updateCompletedTask(value) {
         completedTaskCounter += value;
         $("#completedSum").text(completedTaskCounter);
-        calculateRatioOfTask();   
+        calculateRatioOfTask();
     };
 
-    const calculateRatioOfTask = () => {
-        let ratio = (100 * (completedTaskCounter / taskCounter)).toFixed(1);
+    function calculateRatioOfTask() {
+        ratio = (100 * (completedTaskCounter / taskCounter)).toFixed(1);
 
-        if(taskCounter === 0) {
+        if (taskCounter === 0) {
             ratio = 0;
         }
 
         $('#taskRatio').text(ratio + '%');
     };
 
-    $("#task_input").keypress(function(event) {
+    $("#task_input").keypress(function (event) {
         if (event.which === 13) { // "Enter" tuşuna basıldıysa
             addTask();
         }
     });
 
-    $("#add_button").click(function() {
+    $("#add_button").click(function () {
         addTask();
     });
 
@@ -127,54 +148,69 @@
     function addTask() {
         let task = $("#task_input").val().trim();
 
-        if(task === "") {
-            alert("Please enter your duty");
+        if (task === "" || task === undefined) {
+            $('#liveToast').fadeIn(200);
             return;
         }
 
-        let taskId = generateId('list');
+        addTaskToPage(task);
 
-        let newTask = `<li id="${taskId}" class="list-group-item">
-                    <div class="row">
-                        <div class="col-xl-10 my-auto">${task}</div>
-                        <div class="col-xl-1">
-                            <button class="check_button btn"><i class="bi bi-check-circle fs-3"></i></button>
-                        </div>
-                        <div class="col-xl-1">
-                            <button class="trash_button btn"><i class="bi bi-trash3 fs-4"></i></button>  
-                        </div>
-                    </div>
-                  </li>`;
-
-        $("#tasks").prepend(newTask);
-
-        updateTaskCounter(1);
-        
-        
         $("#task_input").val(''); //bir input elemanının değerini temizlemek (boşaltmak) için kullanılır.
         $("#task_input").focus();
 
     };
 
+
+    function addTaskToPage(task, isCompleted = false) {
+        let taskId = generateId('list');
+
+        let newTask = `<li id="${taskId}" class="list-group-item card mb-3 ${isCompleted ? 'completed-task' : ''}"> <!-- li öğesi doğrudan card stilinde -->
+                    <div class="row align-items-center">
+                        <div class="col my-auto">${task}</div>
+                        <div class="col-auto">
+                            <button class="check_button btn"><i class="bi bi-check-circle fs-3"></i></button>
+                        </div>
+                        <div class="col-auto">
+                            <button class="fav_button btn"><i class="bi bi-star fs-3"></i></button>  
+                        </div>
+                        <div class="col-auto">
+                            <button class="trash_button btn"><i class="bi bi-trash3 fs-4"></i></button>  
+                        </div>
+                    </div>
+                </li>`;
+
+        $("#tasks").prepend(newTask);
+
+        if (isCompleted) {
+            updateCompletedTask(1);
+        }
+        updateTaskCounter(1);
+    }
+
+    $('.btn-close').on('click', () => {
+        $('#liveToast').fadeOut('fast');
+    });
+
     // Dinamik olarak eklenen etiketlere event atayabilmek için 
     // 1. Dinamik olarak eklerken attribute olarak event ver. Mesela string olarak eklediğin etikete onclick vermek gibi.
     // 2. Sayfa ilk yüklendiğinde var olan bir etiket üzerinden, dinamik olarak eklediğin etiketlere ulaşarak event ekle.
 
-    $("#tasks").on("click", ".trash_button", function() {
+    $("#tasks").on("click", ".trash_button", function () {
         let taskItem = $(this).closest("li");
 
-        if(taskItem.hasClass('completed-task')){
+        if (taskItem.hasClass('completed-task')) {
             updateCompletedTask(-1);
         }
-        
+
+        $('.card').addClass('removed-task');
         taskItem.remove();
         updateTaskCounter(-1);
     });
 
-    $("#tasks").on("click", ".check_button", function() {
+    $("#tasks").on("click", ".check_button", function () {
         let taskItem = $(this).closest("li");
 
-        if(taskItem.hasClass('completed-task')){
+        if (taskItem.hasClass('completed-task')) {
             taskItem.removeClass('completed-task');
             updateCompletedTask(-1);
         } else {
@@ -184,54 +220,75 @@
         //$(this).closest("li").toggleClass("completed-task");
     });
 
+    $('#tasks').on('click', '.fav_button', function () {
+        let taskItem = $(this).closest('li');
+        let isFavorited = taskItem.toggleClass('favorited-task');
+        let taskId = taskItem.attr('id');
+
+        if (isFavorited) {
+            Cookies.set(taskId, 'favorited', { expires: 7 });
+        }
+        else {
+            Cookies.remove(taskId);
+        }
+
+        let cookieTask = Cookies.get(taskId);
+        console.log(`Çerezdeki Görev Durumu: ${cookieTask}`); // 'favorited' veya 'undefined'
+    });
+
     let idCounter = 0;
     const generateId = (name) => {
         idCounter++;
         return name + idCounter;
     };
 
-    // Çerezi oluşturma fonksiyonu
-    function setCookie(name, value, days) {
-        let expires = "";
-        if (days) {
-            const date = new Date();
-            date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-            expires = "; expires=" + date.toUTCString();
-        }
-        document.cookie = name + "=" + (value || "") + expires + "; path=/";
-    }
-
-    // Çerezi okuma fonksiyonu
-    function getCookie(name) {
-        const nameEQ = name + "=";
-        const ca = document.cookie.split(';');
-        for(let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null;
-    }
-
-    // VERILERIMIZI COOKIE OLARAK KAYDETME
-    // 1- navbar sağ kısma save butonu koyulacak
-    // 2- buton için bir event listener eklenecek
-    // 3- eklenen event için bir callback(eventhandler) function yazılır
-    // 4- bu eventhandler, kaç tane task var ise her birini bir obje olarak oluşturur.
-    // 5- obje tasklarinin iki adet propertysi olur. content ve isCompleted.
-    // 6- content, taskin ne olduğunu. isCompleted ise tamamlanıp tamamlanmadığı bilgisini taşır.
-    // 7- oluşturulan task objeleri, en yukarıda tanımlanan var data = [] arrayine push edilir.
-    // 8- bütün tasklar bu dataya push edildikten sonra setCookie fonksiyonu ile bu data kaydedilir.
-    // 9- setCookie fonksiyonuna ilk parametre(key) olarak 'data' ikinci parametre ise datamızın stringify edilmiş hali verilir. Üçüncü parametre 7(gün) olaiblir.
-    // 10- setCookie('data', JSON.stringify(data), 7) şeklinde.
-    // 11- böylelikle datalarımız çerez olarak saklanmış olur. Kayıt işlemi yapıldıktan sonra kullanıcı bilgilendirilir.
-
-    // COOKIE OLARAK KAYDEDILEN VERILERIMIZI KULLANMA
-    // 1- sayfa ilk açıldığında 'data' anahtarı ile saklanmış bir veri var mı? Bunun kontrolü yapılır.
-    // 2- eğer data var ise, önceden kaydedilmiş tasklerimiz var demektir. Data yok ise web sitemiz olağan hali ile başlayabilir.
-    // 3- data var ise, var olan datalar çekilir ve data isimli değişkene atılır. getCookie('data')
-    // 4- cookiden çektiğmiz data ile ekranı güncelleyecek bir fonksiyon yazılır.
-    // 5- bu fonksiyon ile cookilerden gelen datalar teker teker eklenir ve ekran hazır hale getirilir
-});
 </script>
+
+<script>
+    $(document).ready(function () {
+        //#region  COOKIE
+        let cookieData = {
+            tasks: []
+        }
+
+        $('#save-button').on('click', () => {
+            // Önceki cooki silinerek, cookiyi kaydetme işlemi temiz bir şekilde yapılır.
+            Cookies.remove('cookieData');
+            let listItems = $('#tasks').children();
+
+            listItems.each(function (index, value) {
+                let taskContent = $(value).find('div').children(':first').text();
+                let isCompleted = $(value).hasClass('completed-task');
+
+                let task = {
+                    taskContent,
+                    isCompleted
+                };
+
+                cookieData.tasks.push(task);
+            });
+
+            Cookies.set('cookieData', JSON.stringify(cookieData));
+        });
+
+        function firstPageLoad() {
+            let myCookie = JSON.parse(Cookies.get('cookieData'));
+            console.log(myCookie);
+
+            for (i = myCookie.tasks.length - 1; i >= 0; i--) {
+                let item = myCookie.tasks[i];
+                addTaskToPage(item.taskContent, item.isCompleted);
+                // addTaskToPage metodunun icerisinde task sayisi update ediliyor zaten
+            }
+        }
+
+        firstPageLoad();
+
+        //#endregion
+        // VERILERIMIZI COOKIE OLARAK KAYDETME
+    });
+
+</script>
+
+
 </html>

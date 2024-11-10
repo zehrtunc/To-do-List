@@ -1,0 +1,31 @@
+.icon-custom {
+    color: rgb(72, 117, 5) !important;
+    font-size: xx-large;
+    padding: 15px
+}
+
+.favorited-task {
+    background-color: #fbf729 !important;
+}
+
+.completed-task{
+    background-color: #85F675 !important;
+}
+
+#warning-button {
+    margin-right: 10px;
+    font-size: large;
+}
+
+body, #main-content {
+    background-color: #C8F0F6 !important;
+}
+
+.list-group-item.card {
+    box-shadow: 0px 6px 10px rgba(0, 0, 0.5, 0.5); /* Kartlara gölge efekti */
+    border-radius: 8px; /* Yuvarlatılmış köşeler */
+}
+
+.removed-task {
+    box-shadow: none;
+}
