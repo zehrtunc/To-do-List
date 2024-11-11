@@ -33,13 +33,15 @@
                 </a>
                 <div class="position-absolute text-success fs-4 fw-bold" style="left: 50%; transform: translateX(-50%)">
                     TO DO LIST</div>
+                    
                 <div>
-                    <button id="save-button" type="button" class="btn btn-danger m-3"
-                        style="width: 100px;">SAVE</button>
+                    <button id="save-button" type="button" class="btn"
+                        style="width: 100px;"><strong>SAVE</strong></button>
                 </div>
             </div>
         </nav>
     </div>
+    <hr style="margin: 0%;">
 
     <!-- END NAVBAR-->
 
@@ -161,10 +163,11 @@
     };
 
 
-    function addTaskToPage(task, isCompleted = false) {
+    function addTaskToPage(task, isCompleted = false, isFavorited = false) {
         let taskId = generateId('list');
 
-        let newTask = `<li id="${taskId}" class="list-group-item card mb-3 ${isCompleted ? 'completed-task' : ''}"> <!-- li öğesi doğrudan card stilinde -->
+        let newTask = `<li id="${taskId}" class="list-group-item card mb-3 ${isCompleted ? 'completed-task' : ''} 
+        ${isFavorited ? 'favorited-task' : ''} "> <!-- li öğesi doğrudan card stilinde -->
                     <div class="row align-items-center">
                         <div class="col my-auto">${task}</div>
                         <div class="col-auto">
@@ -259,10 +262,12 @@
             listItems.each(function (index, value) {
                 let taskContent = $(value).find('div').children(':first').text();
                 let isCompleted = $(value).hasClass('completed-task');
+                let isFavorited = $(value).hasClass('favorited-task');
 
                 let task = {
                     taskContent,
-                    isCompleted
+                    isCompleted,
+                    isFavorited
                 };
 
                 cookieData.tasks.push(task);
@@ -277,7 +282,7 @@
 
             for (i = myCookie.tasks.length - 1; i >= 0; i--) {
                 let item = myCookie.tasks[i];
-                addTaskToPage(item.taskContent, item.isCompleted);
+                addTaskToPage(item.taskContent, item.isCompleted, item.isFavorited);
                 // addTaskToPage metodunun icerisinde task sayisi update ediliyor zaten
             }
         }
