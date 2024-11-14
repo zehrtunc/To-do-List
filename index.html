@@ -27,13 +27,25 @@
     <!-- START NAVBAR-->
     <div id="header-navbar">
         <nav class="navbar bg-body-tertiary">
-            <div class="container-fluid">
-                <a class="navbar-brand" href="#">
-                    <i class="bi bi-journal-check icon-custom"></i>
-                </a>
-                <div class="position-absolute text-success fs-4 fw-bold" style="left: 50%; transform: translateX(-50%)">
-                    TO DO LIST</div>
-                    
+            <div class="container-fluid d-flex align-items-center justify-content-between">
+                <div class="d-flex align-items-center" style="gap: 10px;">
+                    <a class="navbar-brand" href="#">
+                        <i class="bi bi-journal-check icon-custom"></i>
+                    </a>
+                    <label class="switch">
+                        <input class="checkbox" type="checkbox" id="darkModeToggle" />
+                        <span class="slider round"></span>
+                        <div class="icon-container">
+                            <i class="bi bi-emoji-sunglasses"></i>
+                            <i class="bi bi-moon-stars" style="color: white !important;"></i>
+                        </div>
+                    </label>
+                    <div class="position-absolute text-success fs-4 fw-bold"
+                        style="left: 50%; transform: translateX(-50%);">
+                        TO DO LIST
+                    </div>
+                </div>
+
                 <div>
                     <button id="save-button" type="button" class="btn"
                         style="width: 100px;"><strong>SAVE</strong></button>
@@ -47,7 +59,7 @@
 
     <!-- START MAIN CONTENT-->
     <section id="main-content" class="p-5 row">
-        <div class="col-md-9 mt-2">
+        <div class="col-xl-9 mt-2">
             <div class="w-100 justify-content-center d-flex">
                 <div class="card " style="width: 90%;">
                     <div class="card-header fw-bold text-center">
@@ -65,7 +77,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-3 mt-2">
+        <div class="col-xl-3 mt-2">
             <div class="justify-content-center d-flex">
                 <div class="card" style="width: 90%;">
                     <strong class="card-header">To do List Metrikleri</strong>
@@ -106,7 +118,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
 
-<script>
+<script defer>
 
     let completedTaskCounter = 0;
     let taskCounter = 0;
@@ -250,13 +262,14 @@
 <script>
     $(document).ready(function () {
         //#region  COOKIE
-        let cookieData = {
-            tasks: []
-        }
 
         $('#save-button').on('click', () => {
             // Önceki cooki silinerek, cookiyi kaydetme işlemi temiz bir şekilde yapılır.
             Cookies.remove('cookieData');
+            let cookieData = {
+                tasks: []
+            }
+
             let listItems = $('#tasks').children();
 
             listItems.each(function (index, value) {
@@ -280,17 +293,28 @@
             let myCookie = JSON.parse(Cookies.get('cookieData'));
             console.log(myCookie);
 
-            for (i = myCookie.tasks.length - 1; i >= 0; i--) {
-                let item = myCookie.tasks[i];
-                addTaskToPage(item.taskContent, item.isCompleted, item.isFavorited);
-                // addTaskToPage metodunun icerisinde task sayisi update ediliyor zaten
+            if (myCookie) {
+                for (i = myCookie.tasks.length - 1; i >= 0; i--) {
+                    let item = myCookie.tasks[i];
+                    addTaskToPage(item.taskContent, item.isCompleted, item.isFavorited);
+                    // addTaskToPage metodunun icerisinde task sayisi update ediliyor zaten
+                }
             }
+
         }
 
         firstPageLoad();
 
         //#endregion
         // VERILERIMIZI COOKIE OLARAK KAYDETME
+
+        //TOOGLE INPUTU ILE BG COLOR DEGISTIRME
+
+        $('.checkbox').on('click', () => {
+            $('#main-content').toggleClass('dark-mode');
+            $('.navbar').removeClass('bg-body-tertiary').toggleClass('dark-navbar');
+            $('.card').toggleClass('dark-card');
+        });
     });
 
 </script>
